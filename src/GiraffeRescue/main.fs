@@ -193,8 +193,7 @@ let render(context:RenderingContext) (state:TreatzState) =
         blt tree treer
 
         for food in state.GameState.Foods do
-//          let fruit = if (chaos.Next(0,2) < 1)  then state.textures.["fruit-1"] else state.textures.["fruit-2"]
-          let fruit = state.textures.["fruit-1"] 
+          let fruit = if (chaos.Next(0,2) < 1)  then state.textures.["fruit-1"] else state.textures.["fruit-2"]
           let fruitR = { X= ( int food.x) * 1<px> ; Y = (int food.y) * 1<px>; Width = (int fruitSize) * 1<px>; Height = (fruitSize|> int ) * 1<px>} |> Some 
           blt fruit fruitR
         ()
@@ -227,7 +226,7 @@ let render(context:RenderingContext) (state:TreatzState) =
 
     let x2 = (int  (state.GameState.NeckStart.x + x))
     let y2 = (int  (state.GameState.NeckStart.y + y))
-//  
+  
     bresenham 
         draw 
         ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 

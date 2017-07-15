@@ -3,30 +3,27 @@ open SDLUtility
 open System
 open SDLGeometry
 
-/////
-//let noMoreParachuting = 450.0
-//let miaow =  
-//    let p  = new System.Media.SoundPlayer(@"..\..\..\..\images\cat_meow_x.wav")
-//    fun () -> p.Play()
-/////
 let chaos = System.Random(DateTime.Now.Millisecond)
 
 let screenWidth = 800.0
 let screenHeight = 600.0
 
-let fruitSize = 50.0
+let maxFruits = 20
+
+
+let fruitSize = 20.0
 let headSize = 40.0
 let neckIncreaseAmount = 10
 let bodyWidth = 125
 let bodyHeight = 100
 
-let treePositionTop = 50  *  1<px>
+let treePositionTop =   1<px>
 let treePositionLeft =  50 * 1<px> 
 let treeHeight = int screenHeight - 50
 let treeWidth =  int screenWidth - 100
 
 
-let treeTrunk = 550
+let treeTrunk = 500
 let bottomTree = 400 
 type Size = 
     {
@@ -66,11 +63,15 @@ type Game =
 
 let StartGame() =
     let state = 
-        let maxFood = 20
         let foods = ResizeArray<_>()
-        for n in 1..maxFood do
-            { x =  chaos.Next(0, int screenWidth) |> float  
-              y =  chaos.Next(0, int screenWidth) |> float
+        { x =   screenWidth - 150. 
+          y =  treeTrunk |> float
+          vx = 0.
+          vy = 0.} |> foods.Add
+        
+        for n in 1..maxFruits do
+            { x =  chaos.Next(60, int (screenWidth - 100.)) |> float  
+              y =  chaos.Next(50, int treeTrunk) |> float
               vx = 0.
               vy = 0.} |> foods.Add
 
@@ -80,7 +81,7 @@ let StartGame() =
             NeckAngle = 360.0
             NeckLength = 50
             Foods = foods
-            MaxFood =  20
+            MaxFood =  maxFruits
         }
     state.NeckStart.y <- 505.0
     state
