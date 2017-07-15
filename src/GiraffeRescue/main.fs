@@ -100,16 +100,16 @@ let update (state:TreatzState) : TreatzState =
 //    state.GameState.Player2.buttonsPressed <- getController (snd state.Controllers)      
 //    
 //  //  if state.GameState.Player1.buttonsPressed.IsEmpty |> not then System.Diagnostics.Debugger.Break()
-    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 10.
-    if pressed ScanCode.W then state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 10.
-    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 10.
-    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 10.
+    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 5.
+    if pressed ScanCode.W then state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 5.
+    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 5.
+    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 5.
 
     
-//    if pressed ScanCode.Down then state.GameState.NeckEnd.y <- state.GameState.NeckEnd.y + 10.
-//    if pressed ScanCode.Up then state.GameState.NeckEnd.y <- state.GameState.NeckEnd.y - 10.
-    if pressed ScanCode.Right then state.GameState.NeckAngle <- state.GameState.NeckAngle + 10.
-    if pressed ScanCode.Left then state.GameState.NeckAngle <- state.GameState.NeckAngle - 10.
+    if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
+    if pressed ScanCode.Up then state.GameState.NeckLength <- state.GameState.NeckLength + 5    
+    if pressed ScanCode.Right then state.GameState.NeckAngle <- state.GameState.NeckAngle + 0.5
+    if pressed ScanCode.Left then state.GameState.NeckAngle <- state.GameState.NeckAngle - 0.5
 
     state.GameState <- Logic.update state.GameState
     state
@@ -158,8 +158,12 @@ let render(context:RenderingContext) (state:TreatzState) =
     let blt tex dest =
         context.Renderer |> copy tex None dest |> ignore
 
+    let bltEx tex dest angle flip =
+        context.Renderer |> copyEx tex None dest angle (if flip then 0 else 1) |> ignore
+        
     let bltf src dest =
         context.Renderer |> copy state.textures.["font"] (Some src) (Some dest) |> ignore
+
     let drawString (s:string) (x,y) =
         let mutable i = 0
         for c in s do
@@ -192,13 +196,15 @@ let render(context:RenderingContext) (state:TreatzState) =
     |> ignore
     context.Renderer |> SDLRender.copy context.Texture None None |> ignore
 
+    
     match state.GameState.State with
     | Playing -> playing() 
     | GameOver -> () 
 
+   
     let draw x y =
         let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
-        blt state.textures.["boot"] (Some <| z)
+        bltEx state.textures.["head-right"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
     
     let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
     let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
@@ -211,6 +217,15 @@ let render(context:RenderingContext) (state:TreatzState) =
         ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 
         ((int x2),(int y2))
 
+    let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
+              Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
+    
+    bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
+
+    let r = { X = (int state.GameState.NeckStart.x - 130) * 1<px>; Y = (int state.GameState.NeckStart.y - 20) * 1<px>; 
+            Width = (int 250) * 1<px>; Height = (int 200) * 1<px>}
+        
+    blt state.textures.["body"] (Some r)
 
     context.Renderer |> SDLRender.present 
     
@@ -254,8 +269,8 @@ let main() =
 //                ("background",loadTex @"..\..\..\..\images\bg.bmp" )
 //                ("cloud",loadTex @"..\..\..\..\images\cloud.bmp" )
 //                ("catbus",loadTex @"..\..\..\..\images\catbus.bmp" )
-                ("boot",loadTex @"..\..\..\..\images\boot.bmp" )
-//                ("cat-falling",loadTex @"..\..\..\..\images\cat-falling.bmp" )
+                ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
+                ("body",loadTex @"..\..\..\..\images\body.bmp" )
 //                ("cat-parachute",loadTex @"..\..\..\..\images\cat-parachute.bmp" )
 //                ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
