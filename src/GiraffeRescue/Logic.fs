@@ -9,8 +9,13 @@ open System
 /////
 let chaos = System.Random(DateTime.Now.Millisecond)
 
-let screenWidth = 800.0;
-let screenHeight = 600.0;
+let screenWidth = 800.0
+let screenHeight = 600.0
+
+let treePositionTop = 50  *  1<px>
+let treePositionLeft =  50 * 1<px> 
+let treeHeight = int screenHeight - 50
+let treeWidth =  int screenWidth - 100
 
 type Size = 
     {
@@ -43,6 +48,8 @@ type Game =
         //mutable NeckEnd: Position
         mutable NeckLength : int
         mutable NeckAngle : float
+        mutable Foods : Position list
+        mutable MaxFood : int
     }
 
 
@@ -53,6 +60,8 @@ let StartGame() =
             NeckStart = Position.Zero()
             NeckAngle = 90.0
             NeckLength = 250
+            Foods = []
+            MaxFood =  20
         }
     
     state
