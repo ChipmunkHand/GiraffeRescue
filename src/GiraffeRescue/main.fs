@@ -205,7 +205,7 @@ let render(context:RenderingContext) (state:TreatzState) =
 
    
     let draw x y =
-        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
+        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
         bltEx state.textures.["head-right"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
     
     let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
@@ -220,7 +220,7 @@ let render(context:RenderingContext) (state:TreatzState) =
         ((int x2),(int y2))
 
     let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
-              Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
+              Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
     
     bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
 
