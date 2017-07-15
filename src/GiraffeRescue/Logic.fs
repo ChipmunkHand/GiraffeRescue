@@ -58,6 +58,8 @@ type Game =
         mutable NeckAngle : float
         mutable Foods : ResizeArray<Position>
         mutable MaxFood : int
+        mutable lastShrink : int
+        mutable lastSpawn : int
     }
 
 
@@ -82,6 +84,8 @@ let StartGame() =
             NeckLength = 50
             Foods = foods
             MaxFood =  maxFruits
+            lastShrink = 0
+            lastSpawn = 0
         }
     state.NeckStart.y <- 505.0
     state
@@ -110,16 +114,36 @@ let processCollisions (state:Game) =
     while i > -1 do
         let food = state.Foods.[i]
         let r1 = { X = (int food.x) * 1<px>; Y = (int food.y) * 1<px>; Width = (int fruitSize) * 1<px>; Height = (int fruitSize) * 1<px>}
-        let r2 = { X = (int x2) * 1<px>; Y = (int y2) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+        let r2 = { X = (int x2 + 10) * 1<px>; Y = (int y2) * 1<px>; Width = (int headSize - 10) * 1<px>; Height = (int headSize - 20) * 1<px>}
         if overlap(r1, r2) then
             state.Foods.RemoveAt(i)
             state.NeckLength <- state.NeckLength + neckIncreaseAmount
         i <- i - 1
         ()
+    
+
 
     
 let update (state:Game) =
     processCollisions state
+    
+    
+
+    let ts = DateTime.Now - startTime    
+    let elapsed = (int ts.TotalSeconds)
+    if elapsed % 3 = 0 && elapsed > state.lastShrink then
+        state.lastShrink <- elapsed
+        if state.NeckLength > 10 then
+            state.NeckLength <- state.NeckLength - 10
+
+    if elapsed % 1 = 0 && elapsed > state.lastSpawn then
+        state.lastSpawn <- elapsed
+        let f =
+              { x =  chaos.Next(60, int (screenWidth - 100.)) |> float  
+                y =  chaos.Next(50, int treeTrunk) |> float
+                vx = 0.
+                vy = 0.}
+        state.Foods.Add f
     
     state
     

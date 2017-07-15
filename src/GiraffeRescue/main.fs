@@ -102,8 +102,16 @@ let update (state:TreatzState) : TreatzState =
 //  //  if state.GameState.Player1.buttonsPressed.IsEmpty |> not then System.Diagnostics.Debugger.Break()
 //    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 5.
 //    if pressed ScanCode.W the n state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 5.
-    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 8.
-    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 8.
+    if pressed ScanCode.D then 
+        state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 5.
+        if state.GameState.NeckStart.x > 800.0 - 50.0 then
+            state.GameState.NeckStart.x <- 800.0 - 50.0
+  
+    if pressed ScanCode.A then 
+        state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 5.
+        if state.GameState.NeckStart.x < 50.0 then
+            state.GameState.NeckStart.x <- 50.0
+
 
     
     if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
@@ -242,7 +250,7 @@ let render(context:RenderingContext) (state:TreatzState) =
     blt state.textures.["body"] (Some r)
     drawString "GIRAFFE RESCUE" (100, 10)
     let ts = (DateTime.Now - startTime)
-    drawString ("TIME TAKEN " + (ts.Seconds.ToString()))  (500, 10)
+    drawString ("TIME TAKEN " + ((int ts.TotalSeconds).ToString()))  (500, 10)
     
     context.Renderer |> SDLRender.present 
     
