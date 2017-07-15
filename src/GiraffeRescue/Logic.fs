@@ -48,7 +48,7 @@ type Game =
         //mutable NeckEnd: Position
         mutable NeckLength : int
         mutable NeckAngle : float
-        mutable Foods : Position list
+        mutable Foods : ResizeArray<Position>
         mutable MaxFood : int
     }
 
@@ -65,6 +65,9 @@ let StartGame() =
         }
     
     state
+
+//let collisions (state:Game) =
+//    
 
 
 let update (state:Game) =
