@@ -114,7 +114,7 @@ let update (state:TreatzState) : TreatzState =
 
 
     
-    if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
+    //if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
     if pressed ScanCode.Up then state.GameState.NeckLength <- state.GameState.NeckLength + 5    
     if pressed ScanCode.Right then 
         state.GameState.NeckAngle <- state.GameState.NeckAngle + 1.5
@@ -199,6 +199,11 @@ let render(context:RenderingContext) (state:TreatzState) =
         let tree = state.textures.["tree"] 
         let treer = { X= treePositionLeft; Y = treePositionTop; Width = treeWidth * 1<px>; Height = treeHeight * 1<px>} |> Some 
         blt tree treer
+         
+        let platform = state.textures.["platform"] 
+        let pr = Some(platformRectangle)
+        blt platform pr
+
 
         for food in state.GameState.Foods do
           let fruit = if (chaos.Next(0,2) < 1)  then state.textures.["fruit-1"] else state.textures.["fruit-2"]
@@ -220,38 +225,40 @@ let render(context:RenderingContext) (state:TreatzState) =
     context.Renderer |> SDLRender.copy context.Texture None None |> ignore
 
     match state.GameState.State with
-    | Playing -> playing() 
+    | Playing -> 
+        playing() 
+        let draw x y =
+            let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+            bltEx state.textures.["neck"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
+    
+        let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
+        let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
+
+        let x2 = (int  (state.GameState.NeckStart.x + x))
+        let y2 = (int  (state.GameState.NeckStart.y + y))
+  
+        bresenham 
+            draw 
+            ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 
+            ((int x2),(int y2))
+
+        let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
+                  Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+    
+        bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
+
+        let r = { X = (int state.GameState.NeckStart.x - 50) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
+                Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
+        
+        blt state.textures.["body"] (Some r)
+        drawString "GIRAFFE RESCUE" (100, 10)
+        let ts = (DateTime.Now - startTime)
+        drawString ("TIME TAKEN " + ((int ts.TotalSeconds).ToString()))  (500, 10)
     | GameOver -> () 
 
    
-    let draw x y =
-        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
-        bltEx state.textures.["neck"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
-    
-    let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
-    let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
-
-    let x2 = (int  (state.GameState.NeckStart.x + x))
-    let y2 = (int  (state.GameState.NeckStart.y + y))
   
-    bresenham 
-        draw 
-        ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 
-        ((int x2),(int y2))
 
-    let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
-              Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
-    
-    bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
-
-    let r = { X = (int state.GameState.NeckStart.x - 50) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
-            Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
-        
-    blt state.textures.["body"] (Some r)
-    drawString "GIRAFFE RESCUE" (100, 10)
-    let ts = (DateTime.Now - startTime)
-    drawString ("TIME TAKEN " + ((int ts.TotalSeconds).ToString()))  (500, 10)
-    
     context.Renderer |> SDLRender.present 
     
     // delay to lock at 60fps (we could do extra work here)
@@ -259,7 +266,7 @@ let render(context:RenderingContext) (state:TreatzState) =
     if frameTime < delay_timei then delay(delay_timei - frameTime)
     context.lastFrameTick <- getTicks()    
 
-    
+
     
 
 
@@ -301,6 +308,8 @@ let main() =
                 ("neck",loadTex @"..\..\..\..\images\neck.bmp" )
                 ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
                 ("body",loadTex @"..\..\..\..\images\body.bmp" )
+                ("platform", loadTex @"..\..\..\..\images\platform.bmp")
+
                 ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
         
