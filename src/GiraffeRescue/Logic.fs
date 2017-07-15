@@ -39,6 +39,10 @@ type GameState =
 type Game =
     {
         mutable State : GameState
+        mutable NeckStart : Position
+        //mutable NeckEnd: Position
+        mutable NeckLength : int
+        mutable NeckAngle : float
     }
 
 
@@ -46,11 +50,16 @@ let StartGame() =
     let state = 
         {            
             State = Playing
+            NeckStart = Position.Zero()
+            NeckAngle = 90.0
+            NeckLength = 250
         }
     
     state
 
 
 let update (state:Game) =
+    
+
     state
     

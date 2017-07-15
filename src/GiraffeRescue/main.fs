@@ -49,6 +49,23 @@ type ControllerButton =
 //    | P2Win
 //    | Playing
 //    | Nope // both Splat (show splat?)
+ 
+let inline bresenham fill (x0, y0) (x1, y1) =
+    let steep = abs(y1 - y0) > abs(x1 - x0)
+    let x0, y0, x1, y1 =
+        if steep then y0, x0, y1, x1 else x0, y0, x1, y1
+    let x0, y0, x1, y1 =
+        if x0 > x1 then x1, y1, x0, y0 else x0, y0, x1, y1
+    let dx, dy = x1 - x0, abs(y1 - y0)
+    let s = if y0 < y1 then 1 else -1
+    let rec loop e x y =
+        if x <= x1 then
+            if steep then fill y x else fill x y
+            if e < dy then
+                loop (e-dy+dx) (x+1) (y+s)
+            else
+                loop (e-dy) (x+1) y
+    loop (dx/2) x0 y0
     
 type TreatzState =
     { PressedKeys : Set<ScanCode> 
@@ -56,8 +73,7 @@ type TreatzState =
       mutable GameState : Game
       textures : Map<string, SDLTexture.Texture> 
       Controllers : Set<ControllerButton> * Set<ControllerButton>
-      Sprites:     Map<byte,Rectangle>;
-       }
+      Sprites:     Map<byte,Rectangle>; }
 
 let treeDepth = 15
 type RenderingContext =
@@ -84,6 +100,17 @@ let update (state:TreatzState) : TreatzState =
 //    state.GameState.Player2.buttonsPressed <- getController (snd state.Controllers)      
 //    
 //  //  if state.GameState.Player1.buttonsPressed.IsEmpty |> not then System.Diagnostics.Debugger.Break()
+    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 10.
+    if pressed ScanCode.W then state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 10.
+    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 10.
+    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 10.
+
+    
+//    if pressed ScanCode.Down then state.GameState.NeckEnd.y <- state.GameState.NeckEnd.y + 10.
+//    if pressed ScanCode.Up then state.GameState.NeckEnd.y <- state.GameState.NeckEnd.y - 10.
+    if pressed ScanCode.Right then state.GameState.NeckAngle <- state.GameState.NeckAngle + 10.
+    if pressed ScanCode.Left then state.GameState.NeckAngle <- state.GameState.NeckAngle - 10.
+
     state.GameState <- Logic.update state.GameState
     state
     
@@ -128,7 +155,6 @@ let handleEvent (event:SDLEvent.Event) (state:TreatzState) : TreatzState option 
 
 
 let render(context:RenderingContext) (state:TreatzState) =
-   
     let blt tex dest =
         context.Renderer |> copy tex None dest |> ignore
 
@@ -158,7 +184,7 @@ let render(context:RenderingContext) (state:TreatzState) =
     context.Renderer |> SDLRender.clear |> ignore
 
     context.Surface
-    |> SDLSurface.fillRect None {Red=0uy;Green=0uy;Blue=0uy;Alpha=255uy}
+    |> SDLSurface.fillRect None {Red=80uy;Green=80uy;Blue=200uy;Alpha=255uy}
     |> ignore
             
     context.Texture
@@ -169,6 +195,21 @@ let render(context:RenderingContext) (state:TreatzState) =
     match state.GameState.State with
     | Playing -> playing() 
     | GameOver -> () 
+
+    let draw x y =
+        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
+        blt state.textures.["boot"] (Some <| z)
+    
+    let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
+    let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
+
+    let x2 = (int  (state.GameState.NeckStart.x + x))
+    let y2 = (int  (state.GameState.NeckStart.y + y))
+//  
+    bresenham 
+        draw 
+        ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 
+        ((int x2),(int y2))
 
 
     context.Renderer |> SDLRender.present 
@@ -213,7 +254,7 @@ let main() =
 //                ("background",loadTex @"..\..\..\..\images\bg.bmp" )
 //                ("cloud",loadTex @"..\..\..\..\images\cloud.bmp" )
 //                ("catbus",loadTex @"..\..\..\..\images\catbus.bmp" )
-//                ("boot",loadTex @"..\..\..\..\images\boot.bmp" )
+                ("boot",loadTex @"..\..\..\..\images\boot.bmp" )
 //                ("cat-falling",loadTex @"..\..\..\..\images\cat-falling.bmp" )
 //                ("cat-parachute",loadTex @"..\..\..\..\images\cat-parachute.bmp" )
 //                ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
