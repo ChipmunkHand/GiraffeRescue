@@ -10,7 +10,7 @@ open SDLGeometry
 //    fun () -> p.Play()
 /////
 let chaos = System.Random(DateTime.Now.Millisecond)
-
+let startTime = DateTime.Now
 let screenWidth = 800.0
 let screenHeight = 600.0
 

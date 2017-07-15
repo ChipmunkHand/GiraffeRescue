@@ -102,18 +102,18 @@ let update (state:TreatzState) : TreatzState =
 //  //  if state.GameState.Player1.buttonsPressed.IsEmpty |> not then System.Diagnostics.Debugger.Break()
 //    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 5.
 //    if pressed ScanCode.W the n state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 5.
-    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 2.
-    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 2.
+    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 8.
+    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 8.
 
     
     if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
     if pressed ScanCode.Up then state.GameState.NeckLength <- state.GameState.NeckLength + 5    
     if pressed ScanCode.Right then 
-        state.GameState.NeckAngle <- state.GameState.NeckAngle + 0.5
+        state.GameState.NeckAngle <- state.GameState.NeckAngle + 1.5
         if state.GameState.NeckAngle > 360.0 then state.GameState.NeckAngle <- 360.0
 
     if pressed ScanCode.Left then 
-        state.GameState.NeckAngle <- state.GameState.NeckAngle - 0.5
+        state.GameState.NeckAngle <- state.GameState.NeckAngle - 1.5
         if state.GameState.NeckAngle < 180.0 then state.GameState.NeckAngle <- 180.0
   
     //if state.GameState.NeckAngle < 180.0 then state.GameState.NeckAngle <- 180.0
@@ -212,7 +212,6 @@ let render(context:RenderingContext) (state:TreatzState) =
     |> ignore
     context.Renderer |> SDLRender.copy context.Texture None None |> ignore
 
-    
     match state.GameState.State with
     | Playing -> playing() 
     | GameOver -> () 
@@ -242,13 +241,19 @@ let render(context:RenderingContext) (state:TreatzState) =
             Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
         
     blt state.textures.["body"] (Some r)
-
+    drawString "GIRAFFE RESCUE" (100, 10)
+    let ts = (DateTime.Now - startTime)
+    drawString ("TIME TAKEN " + (ts.Seconds.ToString()))  (500, 10)
+    
     context.Renderer |> SDLRender.present 
     
     // delay to lock at 60fps (we could do extra work here)
     let frameTime = getTicks() - context.lastFrameTick
     if frameTime < delay_timei then delay(delay_timei - frameTime)
     context.lastFrameTick <- getTicks()    
+
+    
+    
 
 
 let main() = 
@@ -289,6 +294,7 @@ let main() =
                 ("neck",loadTex @"..\..\..\..\images\neck.bmp" )
                 ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
                 ("body",loadTex @"..\..\..\..\images\body.bmp" )
+                ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
         
         use bitmap = SDLSurface.loadBmp SDLPixel.RGB888Format @"..\..\..\..\images\romfont8x8.bmp"
