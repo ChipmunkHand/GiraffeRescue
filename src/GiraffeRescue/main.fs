@@ -191,6 +191,11 @@ let render(context:RenderingContext) (state:TreatzState) =
         let tree = state.textures.["tree"] 
         let treer = { X= treePositionLeft; Y = treePositionTop; Width = treeWidth * 1<px>; Height = treeHeight * 1<px>} |> Some 
         blt tree treer
+         
+        let platform = state.textures.["platform"] 
+        let pr = Some(platformRectangle)
+        blt platform pr
+
 
         for food in state.GameState.Foods do
           let fruit = if (chaos.Next(0,2) < 1)  then state.textures.["fruit-1"] else state.textures.["fruit-2"]
@@ -288,6 +293,8 @@ let main() =
                 ("neck",loadTex @"..\..\..\..\images\neck.bmp" )
                 ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
                 ("body",loadTex @"..\..\..\..\images\body.bmp" )
+                ("platform", loadTex @"..\..\..\..\images\platform.bmp")
+
             ] |> Map.ofList
         
         use bitmap = SDLSurface.loadBmp SDLPixel.RGB888Format @"..\..\..\..\images\romfont8x8.bmp"

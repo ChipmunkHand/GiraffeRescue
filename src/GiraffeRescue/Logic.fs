@@ -22,6 +22,7 @@ let treePositionLeft =  50 * 1<px>
 let treeHeight = int screenHeight - 50
 let treeWidth =  int screenWidth - 100
 
+let platformRectangle = { X= ((screenWidth - float 150) |> int) * 1<px> ; Y = 50 * 1<px>; Width = 150 * 1<px>; Height = 30 * 1<px>}
 
 let treeTrunk = 500
 let bottomTree = 400 
