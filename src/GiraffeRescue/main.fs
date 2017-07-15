@@ -178,9 +178,11 @@ let render(context:RenderingContext) (state:TreatzState) =
             { X = (int l.x) * 1<px>; Y = (int l.y) * 1<px>; Width = (int s.width) * 1<px>; Height = (int s.height) * 1<px>}
 
         // always draw the catbuses and boots
-        //blt state.textures.["background"] None
+        blt state.textures.["background"] None
         
-       
+        let tree = state.textures.["tree"] 
+        let treer = { X= treePositionLeft; Y = treePositionTop; Width = treeWidth * 1<px>; Height = treeHeight * 1<px>} |> Some 
+        blt tree treer
         ()
 
     // clear screen
@@ -266,9 +268,12 @@ let main() =
         let tex = 
             [
 //                ("titlescreen",loadTex @"..\..\..\..\images\title.bmp" )
-//                ("background",loadTex @"..\..\..\..\images\bg.bmp" )
+                ("background",loadTex @"..\..\..\..\images\bg.bmp" )
+                ("tree",loadTex @"..\..\..\..\images\tree.bmp" )
 //                ("cloud",loadTex @"..\..\..\..\images\cloud.bmp" )
-//                ("catbus",loadTex @"..\..\..\..\images\catbus.bmp" )
+                ("giraffe-body",loadTex @"..\..\..\..\images\catbus.bmp" )
+                ("giraffe-neck",loadTex @"..\..\..\..\images\catbus.bmp" )
+                ("giraffe-head",loadTex @"..\..\..\..\images\catbus.bmp" )
                 ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
                 ("body",loadTex @"..\..\..\..\images\body.bmp" )
 //                ("cat-parachute",loadTex @"..\..\..\..\images\cat-parachute.bmp" )
