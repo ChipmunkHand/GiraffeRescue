@@ -204,6 +204,11 @@ let render(context:RenderingContext) (state:TreatzState) =
         let pr = Some(platformRectangle)
         blt platform pr
 
+        let ban = state.textures.["bananas"] 
+        let br = { X= ((Logic.screenWidth - 80.0) |> int) * 1<px> ; Y = 20 * 1<px>; Width = 64 * 1<px>; Height = 50 * 1<px>} |> Some
+
+        blt ban br
+
 
         for food in state.GameState.Foods do
           let fruit = if (chaos.Next(0,2) < 1)  then state.textures.["fruit-1"] else state.textures.["fruit-2"]
@@ -251,12 +256,18 @@ let render(context:RenderingContext) (state:TreatzState) =
                 Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
         
         blt state.textures.["body"] (Some r)
+    
+        let monkeyR = { X = (int state.GameState.NeckStart.x - 10) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
+                Width = (20) * 1<px>; Height = (int 30) * 1<px>} 
+        blt state.textures.["monkey"] (Some monkeyR)
         drawString "GIRAFFE RESCUE" (100, 10)
         let ts = (DateTime.Now - startTime)
-        drawString ("TIME TAKEN " + ((int ts.TotalSeconds).ToString()))  (500, 10)
-    | GameOver -> () 
+        drawString ("TIME TAKEN " + (ts.Seconds.ToString()))  (500, 10)
+    | GameOver ->  
+        blt state.textures.["monkey-end"] None
+        drawString ("WELL DONE! YOU SAVED THE MONKEY!" + (state.GameState.endScore.ToString()))  (500, 10)
 
-   
+
   
 
     context.Renderer |> SDLRender.present 
@@ -309,6 +320,9 @@ let main() =
                 ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
                 ("body",loadTex @"..\..\..\..\images\body.bmp" )
                 ("platform", loadTex @"..\..\..\..\images\platform.bmp")
+                ("bananas", loadTex @"..\..\..\..\images\bannanas.bmp")
+                ("monkey", loadTex @"..\..\..\..\images\monkey.bmp")
+                ("monkey-end", loadTex @"..\..\..\..\images\end-monkey.bmp")
 
                 ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
