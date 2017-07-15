@@ -113,6 +113,7 @@ let processCollisions (state:Game) =
         if overlap(r1, r2) then
             state.Foods.RemoveAt(i)
             state.NeckLength <- state.NeckLength + neckIncreaseAmount
+        i <- i - 1
         ()
 
     

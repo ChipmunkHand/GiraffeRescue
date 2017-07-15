@@ -286,16 +286,9 @@ let main() =
                 ("tree",loadTex @"..\..\..\..\images\tree.bmp" )
                 ("fruit-1",loadTex @"..\..\..\..\images\fruit.bmp")
                 ("fruit-2",loadTex @"..\..\..\..\images\fruit.bmp")
-
-//                ("cloud",loadTex @"..\..\..\..\images\cloud.bmp" )
                 ("neck",loadTex @"..\..\..\..\images\neck.bmp" )
-                ("giraffe-body",loadTex @"..\..\..\..\images\catbus.bmp" )
-                ("giraffe-neck",loadTex @"..\..\..\..\images\catbus.bmp" )
-                ("giraffe-head",loadTex @"..\..\..\..\images\catbus.bmp" )
                 ("head-right",loadTex @"..\..\..\..\images\head-right.bmp" )
                 ("body",loadTex @"..\..\..\..\images\body.bmp" )
-//                ("cat-parachute",loadTex @"..\..\..\..\images\cat-parachute.bmp" )
-//                ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
         
         use bitmap = SDLSurface.loadBmp SDLPixel.RGB888Format @"..\..\..\..\images\romfont8x8.bmp"
