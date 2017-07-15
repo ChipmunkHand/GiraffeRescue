@@ -1,6 +1,8 @@
 ﻿module Logic
 open SDLUtility
 open System
+open SDLGeometry
+
 /////
 //let noMoreParachuting = 450.0
 //let miaow =  
@@ -11,6 +13,8 @@ let chaos = System.Random(DateTime.Now.Millisecond)
 
 let screenWidth = 800.0
 let screenHeight = 600.0
+
+let fruitSize = 50.0
 
 let treePositionTop = 50  *  1<px>
 let treePositionLeft =  50 * 1<px> 
@@ -66,8 +70,29 @@ let StartGame() =
     
     state
 
-//let collisions (state:Game) =
-//    
+let overlap(rectA, rectB) =
+    let x1 = rectA.X
+    let x2 = rectA.X + rectA.Width
+    let y1 = rectA.Y
+    let y2 = rectA.Y + rectA.Height
+
+    let x1' = rectB.X
+    let x2' = rectB.X + rectB.Width
+    let y1' = rectB.Y
+    let y2' = rectB.Y + rectB.Height
+
+    x2' >= x1 && x1' <= x2 && y2' >= y1 && y1' <= y2
+
+let processCollisions (state:Game) =
+    let mutable i = state.Foods.Count - 1
+    while i > -1 do
+        let food = state.Foods.[i]
+        let r1 = { X = (int food.x) * 1<px>; Y = (int food.y) * 1<px>; Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
+        
+        overlap 
+        ()
+
+    
 
 
 let update (state:Game) =
