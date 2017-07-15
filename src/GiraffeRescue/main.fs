@@ -102,11 +102,19 @@ let update (state:TreatzState) : TreatzState =
 //  //  if state.GameState.Player1.buttonsPressed.IsEmpty |> not then System.Diagnostics.Debugger.Break()
 //    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 5.
 //    if pressed ScanCode.W the n state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 5.
-    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 8.
-    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 8.
+    if pressed ScanCode.D then 
+        state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 5.
+        if state.GameState.NeckStart.x > 800.0 - 50.0 then
+            state.GameState.NeckStart.x <- 800.0 - 50.0
+  
+    if pressed ScanCode.A then 
+        state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 5.
+        if state.GameState.NeckStart.x < 50.0 then
+            state.GameState.NeckStart.x <- 50.0
+
 
     
-    if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
+    //if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
     if pressed ScanCode.Up then state.GameState.NeckLength <- state.GameState.NeckLength + 5    
     if pressed ScanCode.Right then 
         state.GameState.NeckAngle <- state.GameState.NeckAngle + 1.5
@@ -222,41 +230,46 @@ let render(context:RenderingContext) (state:TreatzState) =
     context.Renderer |> SDLRender.copy context.Texture None None |> ignore
 
     match state.GameState.State with
-    | Playing -> playing() 
-    | GameOver -> () 
-
-   
-    let draw x y =
-        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
-        bltEx state.textures.["neck"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
+    | Playing -> 
+        playing() 
+        let draw x y =
+            let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+            bltEx state.textures.["neck"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
     
-    let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
-    let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
+        let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
+        let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
 
-    let x2 = (int  (state.GameState.NeckStart.x + x))
-    let y2 = (int  (state.GameState.NeckStart.y + y))
+        let x2 = (int  (state.GameState.NeckStart.x + x))
+        let y2 = (int  (state.GameState.NeckStart.y + y))
   
-    bresenham 
-        draw 
-        ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 
-        ((int x2),(int y2))
+        bresenham 
+            draw 
+            ((int state.GameState.NeckStart.x),(int state.GameState.NeckStart.y)) 
+            ((int x2),(int y2))
 
-    let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
-              Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+        let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
+                  Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
     
-    bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
+        bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
 
-    let r = { X = (int state.GameState.NeckStart.x - 50) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
-            Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
+        let r = { X = (int state.GameState.NeckStart.x - 50) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
+                Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
         
-    blt state.textures.["body"] (Some r)
+        blt state.textures.["body"] (Some r)
     
-    let monkeyR = { X = (int state.GameState.NeckStart.x - 10) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
-            Width = (20) * 1<px>; Height = (int 30) * 1<px>} 
-    blt state.textures.["monkey"] (Some monkeyR)
-    drawString "GIRAFFE RESCUE" (100, 10)
-    let ts = (DateTime.Now - startTime)
-    drawString ("TIME TAKEN " + (ts.Seconds.ToString()))  (500, 10)
+        let monkeyR = { X = (int state.GameState.NeckStart.x - 10) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
+                Width = (20) * 1<px>; Height = (int 30) * 1<px>} 
+        blt state.textures.["monkey"] (Some monkeyR)
+        drawString "GIRAFFE RESCUE" (100, 10)
+        let ts = (DateTime.Now - startTime)
+        drawString ("TIME TAKEN " + (ts.Seconds.ToString()))  (500, 10)
+    | GameOver ->  
+        blt state.textures.["monkey-end"] None
+        drawString ("WELL DONE! YOU SAVED THE MONKEY!")  (100, 10)
+        drawString ("YOU TOOK " + (state.GameState.endScore.ToString()) + " SECONDS")  (150, 50)
+
+
+  
 
     context.Renderer |> SDLRender.present 
     

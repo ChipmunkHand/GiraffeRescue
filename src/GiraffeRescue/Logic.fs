@@ -59,6 +59,9 @@ type Game =
         mutable NeckAngle : float
         mutable Foods : ResizeArray<Position>
         mutable MaxFood : int
+        mutable lastShrink : int
+        mutable lastSpawn : int
+        mutable endScore : int
     }
 
 
@@ -83,6 +86,9 @@ let StartGame() =
             NeckLength = 50
             Foods = foods
             MaxFood =  maxFruits
+            lastShrink = 0
+            lastSpawn = 0
+            endScore = 0
         }
     state.NeckStart.y <- 505.0
     state
@@ -107,20 +113,61 @@ let processCollisions (state:Game) =
 
     let x2 = (int  (state.NeckStart.x + x))
     let y2 = (int  (state.NeckStart.y + y))
-//
+//  
+    let r2 = { X = (int x2 + 10) * 1<px>; Y = (int y2) * 1<px>; Width = (int headSize - 10) * 1<px>; Height = (int headSize - 20) * 1<px>}
+        
     while i > -1 do
         let food = state.Foods.[i]
         let r1 = { X = (int food.x) * 1<px>; Y = (int food.y) * 1<px>; Width = (int fruitSize) * 1<px>; Height = (int fruitSize) * 1<px>}
-        let r2 = { X = (int x2) * 1<px>; Y = (int y2) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
         if overlap(r1, r2) then
-            state.Foods.RemoveAt(i)
+            food.x <- chaos.Next(60, int (screenWidth - 100.)) |> float  
+            food.y <- chaos.Next(50, int treeTrunk) |> float
+            if chaos.NextDouble() > 0.5 then state.Foods.RemoveAt i
             state.NeckLength <- state.NeckLength + neckIncreaseAmount
         i <- i - 1
         ()
+    
+
+    if overlap (platformRectangle, r2) then
+        state.State <- GameOver
+        let ts = DateTime.Now - startTime    
+        let elapsed = (int ts.TotalSeconds)
+        state.endScore <- elapsed
 
     
 let update (state:Game) =
-    processCollisions state
+    match state.State with
+    | GameOver -> 
+        state
+    | _ ->
+        processCollisions state
+
+        let x = (float state.NeckLength) * Math.Cos(state.NeckAngle * Math.PI / 180.)
+        let y = (float state.NeckLength) * Math.Sin(state.NeckAngle * Math.PI / 180.)
+
+        let x2 = (int  (state.NeckStart.x + x))
+        let y2 = (int  (state.NeckStart.y + y))
+    //
+        let ts = DateTime.Now - startTime    
+        let elapsed = (int ts.TotalSeconds)
+        if elapsed % 3 = 0 && elapsed > state.lastShrink then
+            state.lastShrink <- elapsed
+            if state.NeckLength > 10 then
+                state.NeckLength <- state.NeckLength - 10
     
-    state
+        if elapsed % 1 = 0 && elapsed > state.lastSpawn then
+            state.lastSpawn <- elapsed
+            let f =
+                  { x =  chaos.Next(60, int (screenWidth - 100.)) |> float  
+                    y =  chaos.Next(50, int treeTrunk) |> float
+                    vx = 0.
+                    vy = 0.}
+            let y3 = f.y
+            if y3 < (float y2) && chaos.NextDouble() >= 0.3 then    
+                let z = if y2 > treeTrunk then treeTrunk else y2        
+                f.y <- (float (chaos.Next(z, treeTrunk)))
+
+            state.Foods.Add f
+    
+        state
     
