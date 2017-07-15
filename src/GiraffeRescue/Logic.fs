@@ -15,9 +15,10 @@ let screenWidth = 800.0
 let screenHeight = 600.0
 
 let fruitSize = 50.0
-let headSize = 80.0
+let headSize = 40.0
 let neckIncreaseAmount = 10
-
+let bodyWidth = 125
+let bodyHeight = 100
 
 let treePositionTop = 50  *  1<px>
 let treePositionLeft =  50 * 1<px> 
@@ -65,12 +66,12 @@ let StartGame() =
         {            
             State = Playing
             NeckStart = Position.Zero()
-            NeckAngle = 90.0
-            NeckLength = 250
+            NeckAngle = 360.0
+            NeckLength = 50
             Foods = ResizeArray<_>()
             MaxFood =  20
         }
-    
+    state.NeckStart.y <- 505.0
     state
 
 let overlap(rectA, rectB) =
@@ -88,10 +89,16 @@ let overlap(rectA, rectB) =
 
 let processCollisions (state:Game) =
     let mutable i = state.Foods.Count - 1
+    let x = (float state.NeckLength) * Math.Cos(state.NeckAngle * Math.PI / 180.)
+    let y = (float state.NeckLength) * Math.Sin(state.NeckAngle * Math.PI / 180.)
+
+    let x2 = (int  (state.NeckStart.x + x))
+    let y2 = (int  (state.NeckStart.y + y))
+//
     while i > -1 do
         let food = state.Foods.[i]
         let r1 = { X = (int food.x) * 1<px>; Y = (int food.y) * 1<px>; Width = (int fruitSize) * 1<px>; Height = (int fruitSize) * 1<px>}
-        let r2 = { X = (int state.NeckStart.x) * 1<px>; Y = (int state.NeckStart.y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+        let r2 = { X = (int x2) * 1<px>; Y = (int y2) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
         if overlap(r1, r2) then
             state.Foods.RemoveAt(i)
             state.NeckLength <- state.NeckLength + neckIncreaseAmount
