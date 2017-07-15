@@ -183,6 +183,12 @@ let render(context:RenderingContext) (state:TreatzState) =
         let tree = state.textures.["tree"] 
         let treer = { X= treePositionLeft; Y = treePositionTop; Width = treeWidth * 1<px>; Height = treeHeight * 1<px>} |> Some 
         blt tree treer
+
+        for food in state.GameState.Foods do
+//          let fruit = if (chaos.Next(0,2) < 1)  then state.textures.["fruit-1"] else state.textures.["fruit-2"]
+          let fruit = state.textures.["fruit-1"] 
+          let fruitR = { X= ( int food.x) * 1<px> ; Y = (int food.y) * 1<px>; Width = (int fruitSize) * 1<px>; Height = (fruitSize|> int ) * 1<px>} |> Some 
+          blt fruit fruitR
         ()
 
     // clear screen
@@ -270,6 +276,9 @@ let main() =
 //                ("titlescreen",loadTex @"..\..\..\..\images\title.bmp" )
                 ("background",loadTex @"..\..\..\..\images\bg.bmp" )
                 ("tree",loadTex @"..\..\..\..\images\tree.bmp" )
+                ("fruit-1",loadTex @"..\..\..\..\images\fruit.bmp")
+                ("fruit-2",loadTex @"..\..\..\..\images\fruit.bmp")
+
 //                ("cloud",loadTex @"..\..\..\..\images\cloud.bmp" )
                 ("giraffe-body",loadTex @"..\..\..\..\images\catbus.bmp" )
                 ("giraffe-neck",loadTex @"..\..\..\..\images\catbus.bmp" )

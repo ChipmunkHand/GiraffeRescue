@@ -21,6 +21,9 @@ let treePositionLeft =  50 * 1<px>
 let treeHeight = int screenHeight - 50
 let treeWidth =  int screenWidth - 100
 
+
+let treeTrunk = 550
+let bottomTree = 400 
 type Size = 
     {
         width : float
@@ -59,12 +62,20 @@ type Game =
 
 let StartGame() =
     let state = 
+        let maxFood = 20
+        let foods = ResizeArray<_>()
+        for n in 1..maxFood do
+            { x =  chaos.Next(0, int screenWidth) |> float  
+              y =  chaos.Next(0, int screenWidth) |> float
+              vx = 0.
+              vy = 0.} |> foods.Add
+
         {            
             State = Playing
             NeckStart = Position.Zero()
             NeckAngle = 90.0
             NeckLength = 250
-            Foods = ResizeArray<_>()
+            Foods = foods
             MaxFood =  20
         }
     
