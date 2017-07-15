@@ -265,7 +265,8 @@ let render(context:RenderingContext) (state:TreatzState) =
         drawString ("TIME TAKEN " + (ts.Seconds.ToString()))  (500, 10)
     | GameOver ->  
         blt state.textures.["monkey-end"] None
-        drawString ("WELL DONE! YOU SAVED THE MONKEY!" + (state.GameState.endScore.ToString()))  (500, 10)
+        drawString ("WELL DONE! YOU SAVED THE MONKEY!")  (100, 10)
+        drawString ("YOU TOOK " + (state.GameState.endScore.ToString()) + " SECONDS")  (150, 50)
 
 
   
@@ -322,7 +323,7 @@ let main() =
                 ("platform", loadTex @"..\..\..\..\images\platform.bmp")
                 ("bananas", loadTex @"..\..\..\..\images\bannanas.bmp")
                 ("monkey", loadTex @"..\..\..\..\images\monkey.bmp")
-                ("monkey-end", loadTex @"..\..\..\..\images\end-monkey.bmp")
+                ("monkey-end", loadTex @"..\..\..\..\images\end-moneky.bmp")
 
                 ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
