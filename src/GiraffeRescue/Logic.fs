@@ -60,7 +60,7 @@ let StartGame() =
             NeckStart = Position.Zero()
             NeckAngle = 90.0
             NeckLength = 250
-            Foods = []
+            Foods = ResizeArray<_>()
             MaxFood =  20
         }
     
