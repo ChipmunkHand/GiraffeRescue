@@ -100,16 +100,23 @@ let update (state:TreatzState) : TreatzState =
 //    state.GameState.Player2.buttonsPressed <- getController (snd state.Controllers)      
 //    
 //  //  if state.GameState.Player1.buttonsPressed.IsEmpty |> not then System.Diagnostics.Debugger.Break()
-    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 5.
-    if pressed ScanCode.W then state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 5.
-    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 5.
-    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 5.
+//    if pressed ScanCode.S then state.GameState.NeckStart.y <- state.GameState.NeckStart.y + 5.
+//    if pressed ScanCode.W the n state.GameState.NeckStart.y <- state.GameState.NeckStart.y - 5.
+    if pressed ScanCode.D then state.GameState.NeckStart.x <- state.GameState.NeckStart.x + 2.
+    if pressed ScanCode.A then state.GameState.NeckStart.x <- state.GameState.NeckStart.x - 2.
 
     
     if pressed ScanCode.Down then state.GameState.NeckLength <- state.GameState.NeckLength - 5    
     if pressed ScanCode.Up then state.GameState.NeckLength <- state.GameState.NeckLength + 5    
-    if pressed ScanCode.Right then state.GameState.NeckAngle <- state.GameState.NeckAngle + 0.5
-    if pressed ScanCode.Left then state.GameState.NeckAngle <- state.GameState.NeckAngle - 0.5
+    if pressed ScanCode.Right then 
+        state.GameState.NeckAngle <- state.GameState.NeckAngle + 0.5
+        if state.GameState.NeckAngle > 360.0 then state.GameState.NeckAngle <- 360.0
+
+    if pressed ScanCode.Left then 
+        state.GameState.NeckAngle <- state.GameState.NeckAngle - 0.5
+        if state.GameState.NeckAngle < 180.0 then state.GameState.NeckAngle <- 180.0
+  
+    //if state.GameState.NeckAngle < 180.0 then state.GameState.NeckAngle <- 180.0
 
     state.GameState <- Logic.update state.GameState
     state
@@ -159,7 +166,7 @@ let render(context:RenderingContext) (state:TreatzState) =
         context.Renderer |> copy tex None dest |> ignore
 
     let bltEx tex dest angle flip =
-        context.Renderer |> copyEx tex None dest angle (if flip then 0 else 1) |> ignore
+        context.Renderer |> copyEx tex None dest angle 0 |> ignore
         
     let bltf src dest =
         context.Renderer |> copy state.textures.["font"] (Some src) (Some dest) |> ignore
@@ -171,6 +178,7 @@ let render(context:RenderingContext) (state:TreatzState) =
             i <- i + 1
              
     let playerWin() player = ()
+
 
     let playing() =
         let cloudRect (cloud : Position * Size) : SDLGeometry.Rectangle =
@@ -211,8 +219,8 @@ let render(context:RenderingContext) (state:TreatzState) =
 
    
     let draw x y =
-        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
-        bltEx state.textures.["head-right"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
+        let z = { X = (int x) * 1<px>; Y = (int y) * 1<px>; Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
+        bltEx state.textures.["neck"] (Some <| z) (state.GameState.NeckAngle + 90.) (state.GameState.NeckAngle < 90.0)
     
     let x = (float state.GameState.NeckLength) * Math.Cos(state.GameState.NeckAngle * Math.PI / 180.)
     let y = (float state.GameState.NeckLength) * Math.Sin(state.GameState.NeckAngle * Math.PI / 180.)
@@ -226,12 +234,12 @@ let render(context:RenderingContext) (state:TreatzState) =
         ((int x2),(int y2))
 
     let r = { X = x2 * 1<px>; Y = y2 * 1<px>; 
-              Width = (int 50) * 1<px>; Height = (int 50) * 1<px>}
+              Width = (int headSize) * 1<px>; Height = (int headSize) * 1<px>}
     
     bltEx state.textures.["head-right"] (Some <| r) (state.GameState.NeckAngle + 90.0) (state.GameState.NeckAngle < 90.0)
 
-    let r = { X = (int state.GameState.NeckStart.x - 130) * 1<px>; Y = (int state.GameState.NeckStart.y - 20) * 1<px>; 
-            Width = (int 250) * 1<px>; Height = (int 200) * 1<px>}
+    let r = { X = (int state.GameState.NeckStart.x - 50) * 1<px>; Y = (int state.GameState.NeckStart.y) * 1<px>; 
+            Width = (int bodyWidth) * 1<px>; Height = (int bodyHeight) * 1<px>}
         
     blt state.textures.["body"] (Some r)
 
@@ -280,6 +288,7 @@ let main() =
                 ("fruit-2",loadTex @"..\..\..\..\images\fruit.bmp")
 
 //                ("cloud",loadTex @"..\..\..\..\images\cloud.bmp" )
+                ("neck",loadTex @"..\..\..\..\images\neck.bmp" )
                 ("giraffe-body",loadTex @"..\..\..\..\images\catbus.bmp" )
                 ("giraffe-neck",loadTex @"..\..\..\..\images\catbus.bmp" )
                 ("giraffe-head",loadTex @"..\..\..\..\images\catbus.bmp" )
