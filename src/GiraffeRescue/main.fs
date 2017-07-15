@@ -310,6 +310,7 @@ let main() =
                 ("platform", loadTex @"..\..\..\..\images\platform.bmp")
                 ("bananas", loadTex @"..\..\..\..\images\bannanas.bmp")
                 ("monkey", loadTex @"..\..\..\..\images\monkey.bmp")
+                ("monkey-end", loadTex @"..\..\..\..\images\end-moneky.bmp")
 
                 ("font", loadTex @"..\..\..\..\images\romfont8x8.bmp")           
             ] |> Map.ofList
